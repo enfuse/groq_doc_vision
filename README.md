@@ -1,7 +1,7 @@
 <div align="center">
   <img src="assets/groq-logo.png" alt="Groq" width="200"/>
   
-  # Groq Document Comprehension
+  # 🔍 Groq PDF Vision
   
   **Intelligent PDF processing with enterprise-grade reliability**
   
@@ -10,17 +10,19 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 </div>
 
-Transform any PDF into structured, actionable data using Groq's **meta-llama/llama-4-scout-17b-16e-instruct** model. Extract text, analyze images, detect patterns, and get enterprise-ready JSON output with 100% reliability.
+Transform any PDF into structured data using Groq's lightning-fast vision models. Extract tables, images, text, and insights with advanced AI processing and get enterprise-ready JSON output with high reliability and automatic error handling.
 
-## Features
+## ✨ Key Features
 
-- **🧠 Intelligent Comprehension**: Advanced document understanding with context-aware extraction
-- **📊 Structured Intelligence**: Transform unstructured PDFs into actionable JSON data
-- **🖼️ Visual Analysis**: Detect and describe charts, diagrams, tables, and visual elements
-- **⚡ Enterprise Performance**: Optimized batch processing with 100% reliability guarantee
-- **🐍 Zero Dependencies**: Pure Python implementation, works everywhere
-- **🔧 Flexible Schemas**: Build custom extraction patterns for any document type
-- **📱 Multiple Interfaces**: SDK, CLI, and web interface for every workflow
+- **🚀 Lightning Fast**: Powered by Groq's industry-leading inference speed
+- **📊 Complete Data Extraction**: Tables, text, images, charts, and metadata
+- **🎯 Smart Auto-Configuration**: Optimizes processing based on document size  
+- **⚡ Enterprise Performance**: Optimized batch processing with automatic retry mechanisms
+- **🔧 Flexible Schema**: Custom extraction schemas for any use case
+- **📱 Multiple Interfaces**: CLI, Python API, and Streamlit web app
+- **📋 Enhanced Table Processing**: Supports both array-based and object-based table structures
+- **🛡️ Robust Error Handling**: Graceful error recovery with comprehensive retry logic
+- **📈 Real-time Progress**: Live progress tracking with ETA calculations and terminal logging
 
 ## Installation
 
@@ -538,10 +540,10 @@ Our test suite includes comprehensive performance validation:
 
 | Document | Pages | Time | Tokens | Speed | Cost Est. |
 |----------|-------|------|--------|-------|-----------|
-| Vision 2030 | 85 | 1.8 min | 225K | 2,033 tok/sec | ~$0.23 |
-| Example Financial | 76 | 2.4 min | 198K | 1,354 tok/sec | ~$0.20 |
-| Americas Children | 118 | 3.4 min | 347K | 1,709 tok/sec | ~$0.35 |
-| Fed Economic | 88 | 2.9 min | 265K | 1,519 tok/sec | ~$0.27 |
+| Vision 2030 | 85 | 1.9 min | 230K | 2,033 tok/sec | ~$0.46 |
+| Example Financial | 76 | 3.3 min | 187K | 1,354 tok/sec | ~$0.37 |
+| Americas Children | 118 | 3.3 min | 352K | 1,761 tok/sec | ~$0.70 |
+| Fed Economic | 88 | 3.0 min | 259K | 1,433 tok/sec | ~$0.52 |
 
 ### Individual Test Execution
 
@@ -571,6 +573,9 @@ The test suite verifies:
 - ✅ File I/O, path handling, and error conditions
 - ✅ Performance benchmarks and auto-configuration
 - ✅ Large document processing (up to 118 pages)
+- ✅ Enhanced table extraction with multiple data structures
+- ✅ Streamlit UI functionality without nested expander errors
+- ✅ Data quality filtering and placeholder content removal
 
 ### Prerequisites for Testing
 
@@ -589,6 +594,32 @@ The test runner includes built-in cost awareness:
 ### Complete Documentation
 
 For detailed performance analysis, auto-configuration results, and quality metrics, see `tests/README.md`.
+
+## Recent Improvements
+
+### Version 1.1.0 - Enhanced Table Processing & UI Fixes
+
+**🔧 Major Enhancements:**
+- **Enhanced Table Extraction**: Now supports both array-based and object-based table row structures
+- **Improved Data Quality**: Better filtering of placeholder and example data
+- **Lower Temperature**: Reduced to 0.05 for more consistent extraction results
+- **Real-time Progress**: Enhanced progress tracking with terminal logging and ETA calculations
+
+**🐛 Bug Fixes:**
+- **Fixed Streamlit UI**: Resolved nested expander errors in table display
+- **Improved Error Handling**: Better graceful recovery from processing failures
+- **Enhanced Data Filtering**: More effective removal of placeholder content
+
+**📊 Performance Improvements:**
+- **Faster Processing**: Optimized batch processing with intelligent auto-configuration
+- **Better Reliability**: Enhanced retry mechanisms with exponential backoff
+- **Comprehensive Testing**: All test suites pass including full document processing
+
+**🧪 Test Suite Validation:**
+- ✅ All 8 test categories pass (README examples, integrations, schemas, CLI, full documents)
+- ✅ 367 total pages processed across 4 different document types
+- ✅ Performance benchmarks updated with latest results
+- ✅ Cost estimates and processing speeds validated
 
 ## Configuration
 
@@ -616,8 +647,11 @@ export GROQ_API_KEY="your-api-key-here"
 ### Optimized Processing
 - **Processing Speed**: 1,300-2,000+ tokens/second (optimized batch processing)
 - **Intelligent Auto-Configuration**: Batch sizes automatically scale based on document size
-- **Reliability**: 100% success rate across all test scenarios  
+- **High Reliability**: Robust retry mechanisms with graceful error handling across test scenarios  
 - **Memory Usage**: Optimized for large documents up to 200+ pages
+- **Enhanced Table Extraction**: Supports both array-based and object-based table row structures
+- **Improved Consistency**: Lower temperature settings (0.05) for more reliable extraction results
+- **Real-time Progress**: Live progress tracking with terminal logging and ETA calculations
 
 ### Real-World Benchmarks
 | Document Type | Pages | Processing Time | Throughput |
@@ -637,9 +671,73 @@ export GROQ_API_KEY="your-api-key-here"
 - 38% faster processing with optimized auto-configuration
 - Real-time progress tracking with ETA calculations
 - Automatic retry logic with exponential backoff
+- Enhanced table extraction supporting multiple data structures
+- Improved data filtering to remove placeholder content
+- Lower temperature settings for more consistent results
 
 ## Requirements
 
 - Python 3.8+
 - Groq API key
 - Dependencies: `groq`, `pypdfium2`, `streamlit` (for web interface) 
+
+## Table Extraction Capabilities
+
+The library features advanced table extraction that handles multiple data structures:
+
+### Supported Table Formats
+
+**Array-based Tables (Traditional):**
+```json
+{
+  "headers": ["Column 1", "Column 2", "Column 3"],
+  "rows": [
+    ["Value 1", "Value 2", "Value 3"],
+    ["Value 4", "Value 5", "Value 6"]
+  ]
+}
+```
+
+**Object-based Tables (Financial/Complex):**
+```json
+{
+  "headers": ["Share capital", "Subscribed", "Callable", "Total"],
+  "rows": [
+    {
+      "Subscribed share capital": "2,288,500",
+      "Callable share capital": "(1,601,950)",
+      "Total": "885,722"
+    }
+  ]
+}
+```
+
+### Enhanced Processing Features
+
+- **Smart Structure Detection**: Automatically handles both array and object-based row formats
+- **Intelligent Column Mapping**: Maps dictionary keys to table headers with fuzzy matching
+- **Data Quality Filtering**: Removes placeholder and example data automatically
+- **Consistent Output**: Converts all formats to standardized DataFrames for display
+- **Error Recovery**: Graceful handling of malformed or incomplete table data
+
+### Example Usage
+
+```python
+from groq_pdf_vision import extract_pdf
+
+# Extract tables from financial documents
+result = extract_pdf("financial_report.pdf")
+
+# Access table data
+for table in result["accumulated_data"]["tables_data"]:
+    print(f"Table: {table['table_title']}")
+    print(f"Structure: {len(table['headers'])} columns × {len(table['rows'])} rows")
+    
+    # Both formats work seamlessly
+    if table['headers'] and table['rows']:
+        # Process table data regardless of internal structure
+        headers = table['headers']
+        rows = table['rows']  # Can be arrays or objects
+```
+
+## Integration Examples 

@@ -168,10 +168,12 @@ def generate_example_from_schema(schema_dict):
                 example[field_name] = "Page X"
             elif "content" in field_name.lower():
                 example[field_name] = "main text content from page"
+            elif "title" in field_name.lower():
+                example[field_name] = "actual title from document"
             elif description:
-                example[field_name] = f"example {field_name}"
+                example[field_name] = f"actual {field_name} data"
             else:
-                example[field_name] = f"example_{field_name}"
+                example[field_name] = f"actual_{field_name}"
         elif field_type == "integer":
             if "page" in field_name.lower():
                 example[field_name] = 1
@@ -180,11 +182,15 @@ def generate_example_from_schema(schema_dict):
         elif field_type == "number":
             example[field_name] = 0.0
         elif field_type == "boolean":
-            example[field_name] = True
+            example[field_name] = False  # Default to false for safer extraction
         elif field_type == "array":
             items_def = field_def.get("items", {})
             if items_def.get("type") == "string":
-                example[field_name] = ["example1", "example2"]
+                # For table data, show the structure but emphasize real data
+                if "header" in field_name.lower() or "row" in field_name.lower():
+                    example[field_name] = ["actual_data_1", "actual_data_2"]
+                else:
+                    example[field_name] = ["actual_item_1", "actual_item_2"]
             elif items_def.get("type") == "object":
                 # Handle nested objects
                 nested_example = generate_example_from_schema(items_def)
@@ -217,10 +223,23 @@ IMPORTANT: Return EXACTLY this structure based on the provided schema:
 
 Process these pages: {page_numbers}
 
-COMPREHENSIVE EXTRACTION INSTRUCTIONS:
-1. TEXT CONTENT: Extract all text content according to the schema fields.
+CRITICAL INSTRUCTIONS:
+1. DO NOT use placeholder or example data like "example_table_title", "example1", "example2"
+2. Extract REAL data from the PDF pages
+3. If a table exists but data cannot be extracted, use empty arrays [] for headers and rows
+4. If no table exists, set contains_tables to false and tables_data to empty array
 
-2. VISUAL ELEMENTS: If the schema includes image-related fields, carefully analyze all visual elements including:
+COMPREHENSIVE EXTRACTION INSTRUCTIONS:
+1. TEXT CONTENT: Extract all actual text content according to the schema fields.
+
+2. TABLE EXTRACTION: For each table found:
+   - Extract the ACTUAL table title/caption (not "example_table_title")
+   - Extract the REAL column headers from the table
+   - Extract the ACTUAL row data from each row
+   - If extraction fails, use empty arrays instead of placeholder text
+   - Set contains_tables to true only if tables are actually found
+
+3. VISUAL ELEMENTS: If the schema includes image-related fields, carefully analyze all visual elements including:
    - Charts and graphs (bar, line, pie, scatter, etc.)
    - Diagrams and flowcharts
    - Images and photographs
@@ -229,9 +248,12 @@ COMPREHENSIVE EXTRACTION INSTRUCTIONS:
    - Maps and technical drawings
    - Screenshots or interface elements
 
-3. SCHEMA COMPLIANCE: Follow the exact field names and types specified in the schema.
+4. SCHEMA COMPLIANCE: Follow the exact field names and types specified in the schema.
 
-4. DATA EXTRACTION: Extract data according to the field descriptions in the schema.
+5. DATA QUALITY: 
+   - Use REAL data from the PDF, never placeholder text
+   - If data cannot be extracted, use appropriate empty values (empty strings, empty arrays, false)
+   - Ensure table headers and rows contain actual data or remain empty
 
 Return ONLY the JSON object with the "pages" array containing one object per page that matches the schema structure."""
 
@@ -252,12 +274,12 @@ Return ONLY the JSON object with the "pages" array containing one object per pag
                 }
             ]
             
-            # Use json_object format but with a more structured prompt
+            # Use json_object format with lower temperature for more consistent results
             response = await client.chat.completions.create(
                 model=GROQ_MODEL_ID, 
                 messages=messages,
                 response_format={"type": "json_object"},
-                temperature=0.1, 
+                temperature=0.05,  # Lower temperature for more consistent extraction
                 max_tokens=8000
             )
             
@@ -284,13 +306,28 @@ Return ONLY the JSON object with the "pages" array containing one object per pag
                 
                 # Validate that we have the expected number of results
                 if len(batch_results) != len(page_numbers):
-                    # Pad with empty results if needed using schema structure
+                    # Pad with empty results if needed using proper empty structure
                     while len(batch_results) < len(page_numbers):
                         page_num = page_numbers[len(batch_results)]
-                        empty_result = generate_example_from_schema(schema)
-                        empty_result["page_number"] = page_num
-                        if "content" in empty_result:
-                            empty_result["content"] = f"Partial processing for page {page_num}"
+                        # Create proper empty result instead of example data
+                        empty_result = {
+                            "page_number": page_num,
+                            "content": f"Partial processing for page {page_num}",
+                            "custom_content": "",
+                            "error": 0,
+                            "name": f"Page {page_num}",
+                            "result": f"Processed page {page_num}",
+                            "wordings_and_terms": [],
+                            "key_main_takeaways": [],
+                            "primary_insights": [],
+                            "explicit_sections": [],
+                            "explicit_pages": [page_num],
+                            "contains_tables": False,
+                            "contains_images": False,
+                            "image_descriptions": [],
+                            "visual_summary": "",
+                            "tables_data": []
+                        }
                         batch_results.append(empty_result)
                 
             except json.JSONDecodeError as e:
@@ -311,13 +348,25 @@ Return ONLY the JSON object with the "pages" array containing one object per pag
             else:
                 empty_results = []
                 for page_num in page_numbers:
-                    # Create error result using schema structure
-                    error_result = generate_example_from_schema(schema)
-                    error_result["page_number"] = page_num
-                    if "content" in error_result:
-                        error_result["content"] = f"Failed to process page {page_num}"
-                    if "error" in error_result:
-                        error_result["error"] = 1
+                    # Create proper empty error result instead of example data
+                    error_result = {
+                        "page_number": page_num,
+                        "content": f"Failed to process page {page_num}",
+                        "custom_content": "",
+                        "error": 1,
+                        "name": f"Page {page_num}",
+                        "result": f"Failed to process page {page_num}",
+                        "wordings_and_terms": [],
+                        "key_main_takeaways": [],
+                        "primary_insights": [],
+                        "explicit_sections": [],
+                        "explicit_pages": [page_num],
+                        "contains_tables": False,
+                        "contains_images": False,
+                        "image_descriptions": [],
+                        "visual_summary": "",
+                        "tables_data": []
+                    }
                     empty_results.append(error_result)
                 return empty_results, {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
@@ -377,10 +426,41 @@ def accumulate_results(all_results: List[Dict[str, Any]]) -> Dict[str, Any]:
                         accumulated[field_name] = field_value
             
             elif isinstance(field_value, list) and field_value:
-                # For arrays, extend with unique items
+                # For arrays, extend with unique items but exclude example data
                 for item in field_value:
-                    if item and item not in accumulated[field_name]:
-                        accumulated[field_name].append(item)
+                    # Enhanced filtering for example/dummy data
+                    if (item and item not in accumulated[field_name]):
+                        # Skip obvious example/dummy data patterns
+                        item_str = str(item).lower()
+                        is_example_data = (
+                            item_str.startswith('example') or
+                            item_str.startswith('actual_') or
+                            item_str in ['example1', 'example2', 'example_table_title', 'example summary'] or
+                            'placeholder' in item_str or
+                            item_str == 'actual title from document' or
+                            item_str.startswith('actual_data_') or
+                            item_str.startswith('actual_item_')
+                        )
+                        
+                        # Special handling for tables_data to filter out empty/example tables
+                        if field_name == 'tables_data' and isinstance(item, dict):
+                            table_title = item.get('table_title', '').lower()
+                            headers = item.get('headers', [])
+                            rows = item.get('rows', [])
+                            
+                            # Skip if table has example data or is empty
+                            has_real_data = (
+                                table_title and 
+                                not table_title.startswith('example') and
+                                not table_title.startswith('actual_') and
+                                table_title != 'actual title from document' and
+                                (headers or rows)  # Has actual content
+                            )
+                            
+                            if has_real_data:
+                                accumulated[field_name].append(item)
+                        elif not is_example_data:
+                            accumulated[field_name].append(item)
             
             elif isinstance(field_value, bool):
                 # For booleans, use OR logic (true if any page is true)

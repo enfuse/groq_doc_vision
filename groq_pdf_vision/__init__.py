@@ -9,7 +9,7 @@ Key Features:
 - Intelligent auto-scaling for any PDF size
 - Image description and visual analysis
 - Page-level tracking for all extracted data
-- 100% reliability with zero failed pages
+- High reliability with automatic retry mechanisms and graceful error handling
 - Custom schema support for domain-specific extraction
 - Both synchronous and asynchronous APIs
 
