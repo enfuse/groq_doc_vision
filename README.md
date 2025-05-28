@@ -347,6 +347,63 @@ async def process_batch(input_dir, output_dir):
 asyncio.run(process_batch("./input", "./output"))
 ```
 
+## Example Schema
+
+The `example_docs/` directory contains a comprehensive example schema (`example_custom_schema.json`) that demonstrates various field types and extraction patterns.
+
+### Using the Example Schema
+
+**Method 1: Load JSON Schema Directly**
+```python
+import json
+from groq_pdf_vision import extract_pdf
+
+# Load the example schema
+with open('example_docs/example_custom_schema.json', 'r') as f:
+    schema = json.load(f)
+
+# Use it for extraction
+result = extract_pdf("example_docs/example.pdf", schema=schema)
+```
+
+**Method 2: Build with Schema Helpers (Recommended)**
+```python
+from groq_pdf_vision import extract_pdf
+from groq_pdf_vision.schema_helpers import create_base_schema, add_custom_fields
+
+# Start with the base schema
+base = create_base_schema()
+
+# Add your custom fields
+custom_fields = {
+    "document_type": {
+        "type": "string", 
+        "description": "Type of document (financial, technical, academic, etc.)"
+    },
+    "key_findings": {
+        "type": "array", 
+        "items": {"type": "string"}, 
+        "description": "Most important findings or insights from this page"
+    },
+    "sentiment": {
+        "type": "string", 
+        "description": "Overall sentiment of the page content"
+    }
+}
+
+# Combine them
+schema = add_custom_fields(base, custom_fields)
+result = extract_pdf("example_docs/example.pdf", schema=schema)
+```
+
+### Schema Design Tips
+
+1. **Start Simple** - Begin with `create_base_schema()` and add only what you need
+2. **Clear Descriptions** - Good field descriptions help the AI understand what to extract
+3. **Appropriate Types** - Use arrays for lists, objects for structured data, strings for text
+4. **Required Fields** - Always include `page_number` and `content` as required
+5. **Test Iteratively** - Start with a few pages to test your schema before processing large documents
+
 ## API Reference
 
 ### `extract_pdf(pdf_path, **kwargs)`
@@ -373,13 +430,13 @@ Extract data from a PDF file asynchronously.
 **Returns:**
 - `tuple`: (results_dict, metadata_dict)
 
-### Schema Creators
+### Schema Helpers
 
-- `create_simple_schema()`: Basic text and image extraction
-- `create_entity_extraction_schema()`: Named entity recognition
-- `create_financial_schema()`: Financial document analysis
-- `create_technical_schema()`: Technical documentation
-- `create_academic_schema()`: Academic paper analysis
+- `create_base_schema()`: Comprehensive base schema for most documents
+- `add_custom_fields()`: Add custom fields to an existing schema
+- `create_entity_extraction_fields()`: Helper for entity extraction fields
+- `create_list_field()`: Helper for array field creation
+- `create_object_field()`: Helper for structured object fields
 
 ### Utility Functions
 
