@@ -108,14 +108,14 @@ def get_default_schema():
 
 def auto_configure_processing(total_pages: int) -> Dict[str, Any]:
     """Automatically configure processing parameters based on PDF size."""
-    if total_pages <= SMALL_PDF_THRESHOLD:
+    if total_pages <= SMALL_PDF_THRESHOLD:  # <= 10 pages
         return {"batch_size": 2, "dpi": 200, "description": "Small PDF - High quality processing"}
-    elif total_pages <= MEDIUM_PDF_THRESHOLD:
+    elif total_pages <= MEDIUM_PDF_THRESHOLD:  # 11-50 pages
         return {"batch_size": 3, "dpi": 150, "description": "Medium PDF - Balanced processing"}
-    elif total_pages <= LARGE_PDF_THRESHOLD:
-        return {"batch_size": 2, "dpi": 150, "description": "Large PDF - Efficient processing"}
-    else:
-        return {"batch_size": 1, "dpi": 120, "description": "Enterprise PDF - Memory optimized processing"}
+    elif total_pages <= LARGE_PDF_THRESHOLD:  # 51-200 pages
+        return {"batch_size": 4, "dpi": 150, "description": "Large PDF - Efficient batch processing"}
+    else:  # > 200 pages
+        return {"batch_size": 5, "dpi": 120, "description": "Enterprise PDF - Maximum batch efficiency"}
 
 def convert_pdf_to_images(pdf_path: str, dpi: int = 150, start_page: int = 1, end_page: Optional[int] = None) -> List[Image.Image]:
     """Convert PDF pages to PIL Images using pypdfium2."""
