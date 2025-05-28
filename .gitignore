@@ -76,6 +76,7 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Test files
-test_*.py
-*_test.py 
+# Temporary test files in root directory only (not in tests/ directory)
+/test_*.py
+/*_test.py
+/check_*.py 
