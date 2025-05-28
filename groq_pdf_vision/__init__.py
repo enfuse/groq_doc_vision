@@ -37,9 +37,9 @@ Example Usage:
     result = extract_pdf("document.pdf", schema=schema)
 """
 
-__version__ = "1.0.0"
-__author__ = "SDAIA Team"
-__email__ = "contact@sdaia.gov.sa"
+__version__ = "1.1.0"
+__author__ = "groq"
+__email__ = "ch@enfuse.io"
 
 # Import main functions
 from .core import (
