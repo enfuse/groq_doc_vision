@@ -1,7 +1,7 @@
 <div align="center">
   <img src="assets/groq-logo.png" alt="Groq" width="200"/>
   
-  # 🔍 Groq PDF Vision
+  # Groq PDF Vision
   
   **Intelligent PDF processing with enterprise-grade reliability**
   
@@ -10,11 +10,11 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 </div>
 
-Transform any PDF into structured data using Groq's lightning-fast vision models. Extract tables, images, text, and insights with advanced AI processing and get enterprise-ready JSON output with high reliability and automatic error handling.
+Transform PDF documents into structured data using Groq's vision models. Extract tables, images, text, and metadata with AI processing and receive structured JSON output with automatic error handling and retry mechanisms.
 
-## 📚 Table of Contents
+## Table of Contents
 
-- [✨ Key Features](#-key-features)
+- [Key Features](#key-features)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Configuration](#configuration)
@@ -54,17 +54,17 @@ Transform any PDF into structured data using Groq's lightning-fast vision models
   - [Test Coverage](#test-coverage)
 - [Recent Improvements](#recent-improvements)
 
-## ✨ Key Features
+## Key Features
 
-- **🚀 Lightning Fast**: Powered by Groq's industry-leading inference speed
-- **📊 Complete Data Extraction**: Tables, text, images, charts, and metadata
-- **🎯 Smart Auto-Configuration**: Optimizes processing based on document size  
-- **⚡ Enterprise Performance**: Optimized batch processing with automatic retry mechanisms
-- **🔧 Flexible Schema**: Custom extraction schemas for any use case
-- **📱 Multiple Interfaces**: CLI, Python API, and Streamlit web app
-- **📋 Enhanced Table Processing**: Supports both array-based and object-based table structures
-- **🛡️ Robust Error Handling**: Graceful error recovery with comprehensive retry logic
-- **📈 Real-time Progress**: Live progress tracking with ETA calculations and terminal logging
+- **High-Speed Processing**: Powered by Groq's optimized inference infrastructure
+- **Comprehensive Data Extraction**: Tables, text, images, charts, and document metadata
+- **Automatic Configuration**: Processing parameters optimized based on document characteristics
+- **Batch Processing**: Efficient handling of multi-page documents with retry mechanisms
+- **Flexible Schema System**: Customizable extraction schemas for domain-specific requirements
+- **Multiple Interfaces**: Command-line interface, Python API, and web application
+- **Advanced Table Processing**: Support for both array-based and object-based table structures
+- **Error Handling**: Comprehensive retry logic with exponential backoff
+- **Progress Tracking**: Real-time processing status with estimated completion times
 
 ## Requirements
 
@@ -129,13 +129,13 @@ from groq_pdf_vision import extract_pdf
 
 def progress_callback(message, current, total):
     percentage = (current / total) * 100
-    print(f"🔄 [{current}/{total}] ({percentage:.1f}%) {message}")
+    print(f"Processing [{current}/{total}] ({percentage:.1f}%) {message}")
 
 result = extract_pdf(
     "large_document.pdf",
     progress_callback=progress_callback
 )
-print(f"✅ Completed in {result['metadata']['processing_time_seconds']:.1f} seconds")
+print(f"Completed in {result['metadata']['processing_time_seconds']:.1f} seconds")
 ```
 
 **Async with Progress:**
@@ -145,14 +145,14 @@ from groq_pdf_vision import extract_pdf_async
 
 def progress_callback(message, current, total):
     percentage = (current / total) * 100
-    print(f"🔄 [{current}/{total}] ({percentage:.1f}%) {message}")
+    print(f"Processing [{current}/{total}] ({percentage:.1f}%) {message}")
 
 async def main():
     result, metadata = await extract_pdf_async(
         "large_document.pdf",
         progress_callback=progress_callback
     )
-    print(f"✅ Completed in {metadata['processing_time_seconds']:.1f} seconds")
+    print(f"Completed in {metadata['processing_time_seconds']:.1f} seconds")
 
 asyncio.run(main())
 ```
@@ -477,7 +477,7 @@ async def process_batch(input_dir, output_dir):
             output_filename=f"{output_dir}/{pdf_file.stem}_results.json"
         )
         
-        print(f"  ✅ {len(result['page_results'])} pages in {metadata['processing_time_seconds']:.1f}s")
+        print(f"  Completed: {len(result['page_results'])} pages in {metadata['processing_time_seconds']:.1f}s")
 
 # Process all PDFs in a directory
 asyncio.run(process_batch("./input", "./output"))
@@ -625,7 +625,7 @@ Extract data from a PDF file asynchronously.
 ### Optimized Processing
 - **Processing Speed**: 1,300-2,000+ tokens/second (optimized batch processing)
 - **Intelligent Auto-Configuration**: Batch sizes automatically scale based on document size
-- **High Reliability**: Robust retry mechanisms with graceful error handling across test scenarios  
+- **Reliability**: Retry mechanisms with graceful error handling across test scenarios  
 - **Memory Usage**: Optimized for large documents up to 200+ pages
 - **Enhanced Table Extraction**: Supports both array-based and object-based table row structures
 - **Improved Consistency**: Lower temperature settings (0.05) for more reliable extraction results
@@ -667,18 +667,18 @@ python run_all_tests.py
 
 **Expected Output:**
 ```
-🧪 Running Basic Tests...
-✅ README Examples: All Python SDK examples working
-✅ Integration Tests: Flask/FastAPI patterns verified  
-✅ Schema Tests: Custom schema functionality working
-✅ CLI Tests: All command-line options working
+Running Basic Tests...
+README Examples: All Python SDK examples working
+Integration Tests: Flask/FastAPI patterns verified  
+Schema Tests: Custom schema functionality working
+CLI Tests: All command-line options working
 
-🎯 Results: 4/4 basic test suites passed (completed in ~30 seconds)
+Results: 4/4 basic test suites passed (completed in ~30 seconds)
 
 Would you like to run full document tests? (y/N): N
-⏭️  Skipping full document tests (saves 15-20 minutes and ~$1.00 in API costs)
+Skipping full document tests (saves 15-20 minutes and ~$1.00 in API costs)
 
-🎉 All basic tests passed! The library is working correctly.
+All basic tests passed! The library is working correctly.
 ```
 
 ### Test Categories
@@ -725,18 +725,18 @@ python tests/test_fed_economic_wellbeing_full_async.py
 ### Test Coverage
 
 The test suite verifies:
-- ✅ All README Python SDK examples work correctly
-- ✅ All CLI commands and options function properly
-- ✅ Schema creation, validation, and custom field usage
-- ✅ Synchronous and asynchronous processing modes
-- ✅ Progress callbacks and real-time updates
-- ✅ Integration patterns (Flask, FastAPI, batch processing)
-- ✅ File I/O, path handling, and error conditions
-- ✅ Performance benchmarks and auto-configuration
-- ✅ Large document processing (up to 118 pages)
-- ✅ Enhanced table extraction with multiple data structures
-- ✅ Streamlit UI functionality without nested expander errors
-- ✅ Data quality filtering and placeholder content removal
+- All README Python SDK examples work correctly
+- All CLI commands and options function properly
+- Schema creation, validation, and custom field usage
+- Synchronous and asynchronous processing modes
+- Progress callbacks and real-time updates
+- Integration patterns (Flask, FastAPI, batch processing)
+- File I/O, path handling, and error conditions
+- Performance benchmarks and auto-configuration
+- Large document processing (up to 118 pages)
+- Enhanced table extraction with multiple data structures
+- Streamlit UI functionality without nested expander errors
+- Data quality filtering and placeholder content removal
 
 ### Prerequisites for Testing
 
@@ -760,24 +760,24 @@ For detailed performance analysis, auto-configuration results, and quality metri
 
 ### Version 1.1.0 - Enhanced Table Processing & UI Fixes
 
-**🔧 Major Enhancements:**
+**Major Enhancements:**
 - **Enhanced Table Extraction**: Now supports both array-based and object-based table row structures
 - **Improved Data Quality**: Better filtering of placeholder and example data
 - **Lower Temperature**: Reduced to 0.05 for more consistent extraction results
 - **Real-time Progress**: Enhanced progress tracking with terminal logging and ETA calculations
 
-**🐛 Bug Fixes:**
+**Bug Fixes:**
 - **Fixed Streamlit UI**: Resolved nested expander errors in table display
 - **Improved Error Handling**: Better graceful recovery from processing failures
 - **Enhanced Data Filtering**: More effective removal of placeholder content
 
-**📊 Performance Improvements:**
+**Performance Improvements:**
 - **Faster Processing**: Optimized batch processing with intelligent auto-configuration
 - **Better Reliability**: Enhanced retry mechanisms with exponential backoff
 - **Comprehensive Testing**: All test suites pass including full document processing
 
-**🧪 Test Suite Validation:**
-- ✅ All 8 test categories pass (README examples, integrations, schemas, CLI, full documents)
-- ✅ 367 total pages processed across 4 different document types
-- ✅ Performance benchmarks updated with latest results
-- ✅ Cost estimates and processing speeds validated
+**Test Suite Validation:**
+- All 8 test categories pass (README examples, integrations, schemas, CLI, full documents)
+- 367 total pages processed across 4 different document types
+- Performance benchmarks updated with latest results
+- Cost estimates and processing speeds validated
