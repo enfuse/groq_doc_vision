@@ -15,13 +15,20 @@ Transform any PDF into structured data using Groq's lightning-fast vision models
 ## 📚 Table of Contents
 
 - [✨ Key Features](#-key-features)
+- [Requirements](#requirements)
 - [Installation](#installation)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [API Key Setup](#api-key-setup)
 - [Quick Start](#quick-start)
   - [With Progress Tracking (Recommended for Large PDFs)](#with-progress-tracking-recommended-for-large-pdfs)
 - [Usage](#usage)
   - [Python SDK](#python-sdk)
   - [Command Line Interface](#command-line-interface)
   - [Web Interface](#web-interface)
+- [Table Extraction Capabilities](#table-extraction-capabilities)
+  - [Supported Table Formats](#supported-table-formats)
+  - [Enhanced Processing Features](#enhanced-processing-features)
 - [Schema Building](#schema-building)
   - [Basic Usage](#basic-usage)
   - [Custom Field Examples](#custom-field-examples)
@@ -37,22 +44,15 @@ Transform any PDF into structured data using Groq's lightning-fast vision models
   - [Schema Helpers](#schema-helpers)
   - [Utility Functions](#utility-functions)
 - [Output Structure](#output-structure)
+- [Performance](#performance)
+  - [Optimized Processing](#optimized-processing)
+  - [Real-World Benchmarks](#real-world-benchmarks)
+  - [Auto-Configuration System](#auto-configuration-system)
 - [Testing](#testing)
   - [Comprehensive Test Suite](#comprehensive-test-suite)
   - [Performance Benchmarks](#performance-benchmarks)
   - [Test Coverage](#test-coverage)
 - [Recent Improvements](#recent-improvements)
-- [Configuration](#configuration)
-  - [Environment Variables](#environment-variables)
-  - [API Key Setup](#api-key-setup)
-- [Performance](#performance)
-  - [Optimized Processing](#optimized-processing)
-  - [Real-World Benchmarks](#real-world-benchmarks)
-  - [Auto-Configuration System](#auto-configuration-system)
-- [Table Extraction Capabilities](#table-extraction-capabilities)
-  - [Supported Table Formats](#supported-table-formats)
-  - [Enhanced Processing Features](#enhanced-processing-features)
-- [Requirements](#requirements)
 
 ## ✨ Key Features
 
@@ -66,6 +66,12 @@ Transform any PDF into structured data using Groq's lightning-fast vision models
 - **🛡️ Robust Error Handling**: Graceful error recovery with comprehensive retry logic
 - **📈 Real-time Progress**: Live progress tracking with ETA calculations and terminal logging
 
+## Requirements
+
+- Python 3.8+
+- Groq API key
+- Dependencies: `groq`, `pypdfium2`, `streamlit` (for web interface) 
+
 ## Installation
 
 ```bash
@@ -75,6 +81,27 @@ source groq_pdf_vision_env/bin/activate  # On Windows: groq_pdf_vision_env\Scrip
 
 # Clone and install from source
 pip install -e .
+```
+
+## Configuration
+
+### Environment Variables
+
+```bash
+# Required: Groq API key
+export GROQ_API_KEY="your-api-key-here"
+
+# Optional: Custom model (default: meta-llama/llama-4-scout-17b-16e-instruct)
+export GROQ_MODEL="meta-llama/llama-4-scout-17b-16e-instruct"
+```
+
+### API Key Setup
+
+1. Get your API key from [console.groq.com](https://console.groq.com)
+2. Set it as an environment variable:
+
+```bash
+export GROQ_API_KEY="your-api-key-here"
 ```
 
 ## Quick Start
@@ -237,6 +264,65 @@ streamlit run app.py
 ```
 
 Then open http://localhost:8501 for drag-and-drop PDF processing.
+
+## Table Extraction Capabilities
+
+The library features advanced table extraction that handles multiple data structures:
+
+### Supported Table Formats
+
+**Array-based Tables (Traditional):**
+```json
+{
+  "headers": ["Column 1", "Column 2", "Column 3"],
+  "rows": [
+    ["Value 1", "Value 2", "Value 3"],
+    ["Value 4", "Value 5", "Value 6"]
+  ]
+}
+```
+
+**Object-based Tables (Financial/Complex):**
+```json
+{
+  "headers": ["Share capital", "Subscribed", "Callable", "Total"],
+  "rows": [
+    {
+      "Subscribed share capital": "2,288,500",
+      "Callable share capital": "(1,601,950)",
+      "Total": "885,722"
+    }
+  ]
+}
+```
+
+### Enhanced Processing Features
+
+- **Smart Structure Detection**: Automatically handles both array and object-based row formats
+- **Intelligent Column Mapping**: Maps dictionary keys to table headers with fuzzy matching
+- **Data Quality Filtering**: Removes placeholder and example data automatically
+- **Consistent Output**: Converts all formats to standardized DataFrames for display
+- **Error Recovery**: Graceful handling of malformed or incomplete table data
+
+### Example Usage
+
+```python
+from groq_pdf_vision import extract_pdf
+
+# Extract tables from financial documents
+result = extract_pdf("financial_report.pdf")
+
+# Access table data
+for table in result["accumulated_data"]["tables_data"]:
+    print(f"Table: {table['table_title']}")
+    print(f"Structure: {len(table['headers'])} columns × {len(table['rows'])} rows")
+    
+    # Both formats work seamlessly
+    if table['headers'] and table['rows']:
+        # Process table data regardless of internal structure
+        headers = table['headers']
+        rows = table['rows']  # Can be arrays or objects
+```
 
 ## Schema Building
 
@@ -534,6 +620,39 @@ Extract data from a PDF file asynchronously.
 }
 ```
 
+## Performance
+
+### Optimized Processing
+- **Processing Speed**: 1,300-2,000+ tokens/second (optimized batch processing)
+- **Intelligent Auto-Configuration**: Batch sizes automatically scale based on document size
+- **High Reliability**: Robust retry mechanisms with graceful error handling across test scenarios  
+- **Memory Usage**: Optimized for large documents up to 200+ pages
+- **Enhanced Table Extraction**: Supports both array-based and object-based table row structures
+- **Improved Consistency**: Lower temperature settings (0.05) for more reliable extraction results
+- **Real-time Progress**: Live progress tracking with terminal logging and ETA calculations
+
+### Real-World Benchmarks
+| Document Type | Pages | Processing Time | Throughput |
+|---------------|-------|-----------------|------------|
+| Government Reports | 85-118 pages | 1.8-3.4 minutes | 1,700+ tok/sec |
+| Financial Documents | 76-88 pages | 2.4-2.9 minutes | 1,400+ tok/sec |
+| Technical Documents | 50+ pages | 1-2 minutes | 1,500+ tok/sec |
+
+### Auto-Configuration System
+- **Small PDFs** (≤10 pages): batch_size=2, high quality processing
+- **Medium PDFs** (11-50 pages): batch_size=3, balanced processing  
+- **Large PDFs** (51-200 pages): batch_size=4, efficient batch processing
+- **Enterprise PDFs** (>200 pages): batch_size=5, maximum batch efficiency
+
+### Performance Optimizations
+- 50% fewer API calls through intelligent batching
+- 38% faster processing with optimized auto-configuration
+- Real-time progress tracking with ETA calculations
+- Automatic retry logic with exponential backoff
+- Enhanced table extraction supporting multiple data structures
+- Improved data filtering to remove placeholder content
+- Lower temperature settings for more consistent results
+
 ## Testing
 
 ### Comprehensive Test Suite
@@ -662,122 +781,5 @@ For detailed performance analysis, auto-configuration results, and quality metri
 - ✅ 367 total pages processed across 4 different document types
 - ✅ Performance benchmarks updated with latest results
 - ✅ Cost estimates and processing speeds validated
-
-## Configuration
-
-### Environment Variables
-
-```bash
-# Required: Groq API key
-export GROQ_API_KEY="your-api-key-here"
-
-# Optional: Custom model (default: meta-llama/llama-4-scout-17b-16e-instruct)
-export GROQ_MODEL="meta-llama/llama-4-scout-17b-16e-instruct"
-```
-
-### API Key Setup
-
-1. Get your API key from [console.groq.com](https://console.groq.com)
-2. Set it as an environment variable:
-
-```bash
-export GROQ_API_KEY="your-api-key-here"
-```
-
-## Performance
-
-### Optimized Processing
-- **Processing Speed**: 1,300-2,000+ tokens/second (optimized batch processing)
-- **Intelligent Auto-Configuration**: Batch sizes automatically scale based on document size
-- **High Reliability**: Robust retry mechanisms with graceful error handling across test scenarios  
-- **Memory Usage**: Optimized for large documents up to 200+ pages
-- **Enhanced Table Extraction**: Supports both array-based and object-based table row structures
-- **Improved Consistency**: Lower temperature settings (0.05) for more reliable extraction results
-- **Real-time Progress**: Live progress tracking with terminal logging and ETA calculations
-
-### Real-World Benchmarks
-| Document Type | Pages | Processing Time | Throughput |
-|---------------|-------|-----------------|------------|
-| Government Reports | 85-118 pages | 1.8-3.4 minutes | 1,700+ tok/sec |
-| Financial Documents | 76-88 pages | 2.4-2.9 minutes | 1,400+ tok/sec |
-| Technical Documents | 50+ pages | 1-2 minutes | 1,500+ tok/sec |
-
-### Auto-Configuration System
-- **Small PDFs** (≤10 pages): batch_size=2, high quality processing
-- **Medium PDFs** (11-50 pages): batch_size=3, balanced processing  
-- **Large PDFs** (51-200 pages): batch_size=4, efficient batch processing
-- **Enterprise PDFs** (>200 pages): batch_size=5, maximum batch efficiency
-
-### Performance Optimizations
-- 50% fewer API calls through intelligent batching
-- 38% faster processing with optimized auto-configuration
-- Real-time progress tracking with ETA calculations
-- Automatic retry logic with exponential backoff
-- Enhanced table extraction supporting multiple data structures
-- Improved data filtering to remove placeholder content
-- Lower temperature settings for more consistent results
-
-## Requirements
-
-- Python 3.8+
-- Groq API key
-- Dependencies: `groq`, `pypdfium2`, `streamlit` (for web interface) 
-
-## Table Extraction Capabilities
-
-The library features advanced table extraction that handles multiple data structures:
-
-### Supported Table Formats
-
-**Array-based Tables (Traditional):**
-```json
-{
-  "headers": ["Column 1", "Column 2", "Column 3"],
-  "rows": [
-    ["Value 1", "Value 2", "Value 3"],
-    ["Value 4", "Value 5", "Value 6"]
-  ]
-}
-```
-
-**Object-based Tables (Financial/Complex):**
-```json
-{
-  "headers": ["Share capital", "Subscribed", "Callable", "Total"],
-  "rows": [
-    {
-      "Subscribed share capital": "2,288,500",
-      "Callable share capital": "(1,601,950)",
-      "Total": "885,722"
-    }
-  ]
-}
-```
-
-### Enhanced Processing Features
-
-- **Smart Structure Detection**: Automatically handles both array and object-based row formats
-- **Intelligent Column Mapping**: Maps dictionary keys to table headers with fuzzy matching
-- **Data Quality Filtering**: Removes placeholder and example data automatically
-- **Consistent Output**: Converts all formats to standardized DataFrames for display
-- **Error Recovery**: Graceful handling of malformed or incomplete table data
-
-### Example Usage
-
-```python
-from groq_pdf_vision import extract_pdf
-
-# Extract tables from financial documents
-result = extract_pdf("financial_report.pdf")
-
-# Access table data
-for table in result["accumulated_data"]["tables_data"]:
-    print(f"Table: {table['table_title']}")
-    print(f"Structure: {len(table['headers'])} columns × {len(table['rows'])} rows")
-    
-    # Both formats work seamlessly
-    if table['headers'] and table['rows']:
-        # Process table data regardless of internal structure
-        headers = table['headers']
-        rows = table['rows']  # Can be arrays or objects
 ``` 
+</rewritten_file>
