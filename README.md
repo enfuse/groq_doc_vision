@@ -12,6 +12,48 @@
 
 Transform any PDF into structured data using Groq's lightning-fast vision models. Extract tables, images, text, and insights with advanced AI processing and get enterprise-ready JSON output with high reliability and automatic error handling.
 
+## 📚 Table of Contents
+
+- [✨ Key Features](#-key-features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [With Progress Tracking (Recommended for Large PDFs)](#with-progress-tracking-recommended-for-large-pdfs)
+- [Usage](#usage)
+  - [Python SDK](#python-sdk)
+  - [Command Line Interface](#command-line-interface)
+  - [Web Interface](#web-interface)
+- [Schema Building](#schema-building)
+  - [Basic Usage](#basic-usage)
+  - [Custom Field Examples](#custom-field-examples)
+  - [Schema Building Helpers](#schema-building-helpers)
+- [Integration Examples](#integration-examples)
+  - [Flask Application](#flask-application)
+  - [FastAPI Application](#fastapi-application)
+  - [Batch Processing](#batch-processing)
+- [Example Schema](#example-schema)
+  - [Using the Example Schema](#using-the-example-schema)
+  - [Schema Design Tips](#schema-design-tips)
+- [API Reference](#api-reference)
+  - [Schema Helpers](#schema-helpers)
+  - [Utility Functions](#utility-functions)
+- [Output Structure](#output-structure)
+- [Testing](#testing)
+  - [Comprehensive Test Suite](#comprehensive-test-suite)
+  - [Performance Benchmarks](#performance-benchmarks)
+  - [Test Coverage](#test-coverage)
+- [Recent Improvements](#recent-improvements)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [API Key Setup](#api-key-setup)
+- [Performance](#performance)
+  - [Optimized Processing](#optimized-processing)
+  - [Real-World Benchmarks](#real-world-benchmarks)
+  - [Auto-Configuration System](#auto-configuration-system)
+- [Table Extraction Capabilities](#table-extraction-capabilities)
+  - [Supported Table Formats](#supported-table-formats)
+  - [Enhanced Processing Features](#enhanced-processing-features)
+- [Requirements](#requirements)
+
 ## ✨ Key Features
 
 - **🚀 Lightning Fast**: Powered by Groq's industry-leading inference speed
@@ -738,6 +780,4 @@ for table in result["accumulated_data"]["tables_data"]:
         # Process table data regardless of internal structure
         headers = table['headers']
         rows = table['rows']  # Can be arrays or objects
-```
-
-## Integration Examples 
+``` 
