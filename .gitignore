@@ -79,4 +79,9 @@ Thumbs.db
 # Temporary test files in root directory only (not in tests/ directory)
 /test_*.py
 /*_test.py
-/check_*.py 
+/check_*.py
+
+# Sensitive files
+emaillist.txt
+*.key
+*.secret 

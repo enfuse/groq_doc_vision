@@ -14,8 +14,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from groq_pdf_vision import extract_pdf
 from groq_pdf_vision.schema_helpers import create_base_schema, add_custom_fields
 
-# Set API key
-os.environ["GROQ_API_KEY"] = "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"
+# Check for API key - fail fast if not available
+if not os.environ.get("GROQ_API_KEY"):
+    print("❌ ERROR: GROQ_API_KEY environment variable not set")
+    print("   Please set your Groq API key: export GROQ_API_KEY='your-key-here'")
+    sys.exit(1)
 
 # Get file paths relative to the tests directory
 EXAMPLE_PDF = str(Path(__file__).parent.parent / "example_docs" / "example.pdf")

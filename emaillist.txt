@@ -1,9 +1,0 @@
-Cahlen Humphreys - ch@enfuse.io
-Afton Carlons    - ac@enfuse.io
-Cal Wilmott      - cwilmott@groq.com
-Chris Stephens   - cstephens@groq.com
-
-The Garage - Office 60 (not marked)
-
-
-GROQ API KEY - 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 
