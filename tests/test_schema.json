@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "page_number": {
+      "type": "integer",
+      "description": "Page number"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief summary of the page content"
+    },
+    "key_points": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Key points from this page"
+    }
+  },
+  "required": ["page_number", "summary"]
+} 

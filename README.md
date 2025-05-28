@@ -490,6 +490,58 @@ Extract data from a PDF file asynchronously.
 }
 ```
 
+## Testing
+
+### Comprehensive Test Suite
+
+The repository includes a comprehensive test suite that verifies all functionality and README examples work correctly.
+
+**Quick Test:**
+```bash
+cd tests
+python run_all_tests.py
+```
+
+**Expected Output:**
+```
+🎯 Results: 4/4 test suites passed
+🎉 All tests passed! The library is working correctly.
+```
+
+### Test Coverage
+
+The test suite verifies:
+- ✅ All README Python SDK examples
+- ✅ All CLI commands and options
+- ✅ Schema creation and validation
+- ✅ Synchronous and asynchronous processing
+- ✅ Progress callbacks and error handling
+- ✅ Integration patterns (Flask, FastAPI, batch)
+- ✅ File I/O and path handling
+
+### Individual Tests
+
+Run specific test categories:
+
+```bash
+# Test all Python SDK examples
+python tests/test_readme_examples.py
+
+# Test integration patterns
+python tests/test_flask_integration.py
+
+# Test schema usage
+python tests/test_example_schema.py
+```
+
+### Prerequisites for Testing
+
+1. **API Key**: `export GROQ_API_KEY="your-key-here"`
+2. **Package Installation**: `pip install -e .`
+3. **Virtual Environment** (recommended)
+
+See `tests/README.md` for detailed testing documentation.
+
 ## Configuration
 
 ### Environment Variables
