@@ -41,7 +41,8 @@ Transform PDF documents into structured data using Groq's vision models. Extract
   - [Using the Example Schema](#using-the-example-schema)
   - [Schema Design Tips](#schema-design-tips)
 - [API Reference](#api-reference)
-  - [Schema Helpers](#schema-helpers)
+  - [Core Functions](#core-functions)
+  - [Schema Helper Functions](#schema-helper-functions)
   - [Utility Functions](#utility-functions)
 - [Output Structure](#output-structure)
 - [Performance](#performance)
@@ -542,43 +543,317 @@ result = extract_pdf("example_docs/example.pdf", schema=schema)
 
 ## API Reference
 
-### `extract_pdf(pdf_path, **kwargs)`
+### Core Functions
 
-Extract data from a PDF file synchronously.
+#### `extract_pdf(pdf_path, **kwargs)`
+
+Extract data from a PDF file synchronously with comprehensive error handling and progress tracking.
+
+**Syntax:**
+```python
+extract_pdf(
+    pdf_path: str,
+    schema: Optional[Dict] = None,
+    start_page: Optional[int] = None,
+    end_page: Optional[int] = None,
+    save_results: bool = False,
+    output_filename: Optional[str] = None,
+    progress_callback: Optional[Callable] = None
+) -> Dict[str, Any]
+```
 
 **Parameters:**
-- `pdf_path` (str): Path to the PDF file
-- `schema` (dict, optional): Custom JSON schema for extraction
-- `start_page` (int, optional): Starting page number (1-indexed)
-- `end_page` (int, optional): Ending page number (1-indexed)
-- `save_results` (bool, optional): Save results to JSON file
-- `output_filename` (str, optional): Custom output filename
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `pdf_path` | `str` | Yes | - | Path to the PDF file to process. Must be a valid file path. |
+| `schema` | `Dict` | No | `None` | Custom JSON schema for extraction. If None, uses comprehensive default schema. |
+| `start_page` | `int` | No | `1` | Starting page number (1-indexed). Must be ≥ 1. |
+| `end_page` | `int` | No | `None` | Ending page number (1-indexed). If None, processes to end of document. |
+| `save_results` | `bool` | No | `False` | Whether to save results to JSON file automatically. |
+| `output_filename` | `str` | No | `None` | Custom output filename. If None and save_results=True, auto-generates filename. |
+| `progress_callback` | `Callable` | No | `None` | Callback function for progress updates: `callback(message, current, total)` |
 
 **Returns:**
-- `dict`: Extraction results with page-level and accumulated data
+- **Type:** `Dict[str, Any]`
+- **Structure:** Complete extraction results containing:
+  - `page_results`: List of per-page extraction data
+  - `accumulated_data`: Aggregated data across all pages
+  - `processing_stats`: Performance and timing information
+  - `metadata`: Processing configuration and timestamps
 
-### `extract_pdf_async(pdf_path, **kwargs)`
+**Example Usage:**
+```python
+# Basic extraction
+result = extract_pdf("document.pdf")
 
-Extract data from a PDF file asynchronously.
+# With custom schema and page range
+custom_schema = {"type": "object", "properties": {"summary": {"type": "string"}}}
+result = extract_pdf(
+    "document.pdf",
+    schema=custom_schema,
+    start_page=1,
+    end_page=10,
+    save_results=True
+)
 
-**Parameters:** Same as `extract_pdf`
+# With progress tracking
+def progress_handler(message, current, total):
+    print(f"[{current}/{total}] {message}")
+
+result = extract_pdf("document.pdf", progress_callback=progress_handler)
+```
+
+**Exceptions:**
+- `FileNotFoundError`: PDF file does not exist
+- `ValueError`: Invalid page range or malformed schema
+- `PermissionError`: Insufficient permissions to read PDF or write output
+- `APIError`: Groq API authentication or rate limit issues
+
+---
+
+#### `extract_pdf_async(pdf_path, **kwargs)`
+
+Extract data from a PDF file asynchronously for better performance with large documents.
+
+**Syntax:**
+```python
+async extract_pdf_async(
+    pdf_path: str,
+    schema: Optional[Dict] = None,
+    start_page: Optional[int] = None,
+    end_page: Optional[int] = None,
+    save_results: bool = False,
+    output_filename: Optional[str] = None,
+    progress_callback: Optional[Callable] = None
+) -> Tuple[Dict[str, Any], Dict[str, Any]]
+```
+
+**Parameters:**
+Same as `extract_pdf()` above.
 
 **Returns:**
-- `tuple`: (results_dict, metadata_dict)
+- **Type:** `Tuple[Dict[str, Any], Dict[str, Any]]`
+- **Structure:** 
+  - `[0]`: Extraction results (same structure as `extract_pdf`)
+  - `[1]`: Metadata dictionary with processing statistics and configuration
 
-### Schema Helpers
+**Example Usage:**
+```python
+import asyncio
 
-- `create_base_schema()`: Comprehensive base schema for most documents
-- `add_custom_fields()`: Add custom fields to an existing schema
-- `create_entity_extraction_fields()`: Helper for entity extraction fields
-- `create_list_field()`: Helper for array field creation
-- `create_object_field()`: Helper for structured object fields
+async def process_document():
+    result, metadata = await extract_pdf_async("large_document.pdf")
+    print(f"Processed {metadata['total_pages']} pages in {metadata['processing_time_seconds']:.1f}s")
+    return result
+
+# Run async processing
+result = asyncio.run(process_document())
+```
+
+**Exceptions:**
+Same as `extract_pdf()` above.
+
+---
+
+### Schema Helper Functions
+
+#### `create_base_schema(include_images=True, include_tables=True)`
+
+Create a comprehensive base schema suitable for most document types.
+
+**Syntax:**
+```python
+create_base_schema(
+    include_images: bool = True,
+    include_tables: bool = True
+) -> Dict[str, Any]
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `include_images` | `bool` | `True` | Whether to include image analysis fields in schema |
+| `include_tables` | `bool` | `True` | Whether to include table extraction fields in schema |
+
+**Returns:**
+- **Type:** `Dict[str, Any]`
+- **Description:** JSON schema with standard fields for page content, metadata, and optional image/table analysis
+
+**Example Usage:**
+```python
+# Full schema with all features
+schema = create_base_schema()
+
+# Text-only schema (faster processing)
+text_schema = create_base_schema(include_images=False, include_tables=False)
+```
+
+---
+
+#### `add_custom_fields(base_schema, custom_fields)`
+
+Add custom extraction fields to an existing schema.
+
+**Syntax:**
+```python
+add_custom_fields(
+    base_schema: Dict[str, Any],
+    custom_fields: Dict[str, Any]
+) -> Dict[str, Any]
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `base_schema` | `Dict` | Base schema to extend (typically from `create_base_schema()`) |
+| `custom_fields` | `Dict` | Dictionary of custom field definitions following JSON Schema format |
+
+**Returns:**
+- **Type:** `Dict[str, Any]`
+- **Description:** Extended schema with custom fields merged into base schema
+
+**Example Usage:**
+```python
+base = create_base_schema()
+custom_fields = {
+    "financial_figures": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Revenue, profit, and cost figures mentioned"
+    },
+    "risk_factors": {
+        "type": "array", 
+        "items": {"type": "string"},
+        "description": "Risk factors and warnings identified"
+    }
+}
+schema = add_custom_fields(base, custom_fields)
+```
+
+---
+
+#### `create_entity_extraction_fields(entity_types)`
+
+Generate schema fields for extracting specific entity types.
+
+**Syntax:**
+```python
+create_entity_extraction_fields(
+    entity_types: List[str]
+) -> Dict[str, Any]
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `entity_types` | `List[str]` | List of entity types to extract. Supported: `["person", "company", "location", "date", "money", "product", "technology", "email"]` |
+
+**Returns:**
+- **Type:** `Dict[str, Any]`
+- **Description:** Schema fields for extracting specified entity types
+
+**Example Usage:**
+```python
+# Extract people and companies
+entity_fields = create_entity_extraction_fields(["person", "company", "location"])
+schema = add_custom_fields(create_base_schema(), entity_fields)
+```
+
+---
 
 ### Utility Functions
 
-- `validate_schema(schema)`: Validate a JSON schema
-- `estimate_processing_time(pdf_path)`: Estimate processing time
-- `get_pdf_info(pdf_path)`: Get PDF metadata
+#### `validate_schema(schema)`
+
+Validate a JSON schema for compatibility with the extraction system.
+
+**Syntax:**
+```python
+validate_schema(schema: Dict[str, Any]) -> bool
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `schema` | `Dict` | JSON schema to validate |
+
+**Returns:**
+- **Type:** `bool`
+- **Description:** `True` if schema is valid, raises exception if invalid
+
+**Exceptions:**
+- `ValueError`: Schema format is invalid or incompatible
+
+---
+
+#### `get_pdf_info(pdf_path)`
+
+Get metadata and information about a PDF file.
+
+**Syntax:**
+```python
+get_pdf_info(pdf_path: str) -> Dict[str, Any]
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `pdf_path` | `str` | Path to PDF file |
+
+**Returns:**
+- **Type:** `Dict[str, Any]`
+- **Structure:**
+  ```python
+  {
+      "total_pages": int,
+      "file_size_mb": float,
+      "estimated_processing_time": float,
+      "recommended_batch_size": int,
+      "estimated_cost": float
+  }
+  ```
+
+**Example Usage:**
+```python
+info = get_pdf_info("large_document.pdf")
+print(f"Document has {info['total_pages']} pages")
+print(f"Estimated processing time: {info['estimated_processing_time']:.1f} minutes")
+print(f"Estimated cost: ${info['estimated_cost']:.2f}")
+```
+
+---
+
+### Error Handling
+
+All functions may raise the following common exceptions:
+
+| Exception | Description | Common Causes |
+|-----------|-------------|---------------|
+| `FileNotFoundError` | PDF file not found | Invalid file path, file moved/deleted |
+| `PermissionError` | Insufficient file permissions | Read-only files, permission restrictions |
+| `ValueError` | Invalid parameter values | Negative page numbers, malformed schema |
+| `APIError` | Groq API issues | Invalid API key, rate limits, service unavailable |
+| `ProcessingError` | PDF processing failures | Corrupted PDF, unsupported format |
+
+**Example Error Handling:**
+```python
+try:
+    result = extract_pdf("document.pdf", start_page=1, end_page=10)
+except FileNotFoundError:
+    print("PDF file not found. Please check the file path.")
+except ValueError as e:
+    print(f"Invalid parameters: {e}")
+except APIError as e:
+    print(f"API error: {e}. Check your API key and rate limits.")
+except Exception as e:
+    print(f"Unexpected error: {e}")
+```
 
 ## Output Structure
 
