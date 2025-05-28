@@ -41,18 +41,6 @@ def load_api_key():
     if api_key:
         return api_key
     
-    # Try emaillist.txt file in current directory
-    try:
-        with open("emaillist.txt", "r") as f:
-            content = f.read()
-            for line in content.split('\n'):
-                if 'GROQ API KEY' in line:
-                    api_key = line.split(' - ')[-1].strip()
-                    os.environ["GROQ_API_KEY"] = api_key
-                    return api_key
-    except FileNotFoundError:
-        pass
-    
     raise ValueError(
         "❌ Groq API key not found. Please set GROQ_API_KEY environment variable "
         "or add it to emaillist.txt file in format: 'GROQ API KEY - your_key_here'"
