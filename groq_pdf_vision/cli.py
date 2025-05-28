@@ -15,14 +15,6 @@ from .utils import (
     get_pdf_info,
     create_progress_callback
 )
-from .schemas import (
-    create_simple_schema,
-    create_entity_extraction_schema,
-    create_financial_schema,
-    create_technical_schema,
-    create_academic_schema,
-    create_legal_schema
-)
 
 
 def parse_schema_argument(schema_arg: str) -> dict:
@@ -57,17 +49,10 @@ def parse_schema_argument(schema_arg: str) -> dict:
 
 def get_predefined_schema(schema_name: str) -> Optional[dict]:
     """Get a predefined schema by name."""
-    schemas = {
-        "simple": create_simple_schema,
-        "entity": create_entity_extraction_schema,
-        "financial": create_financial_schema,
-        "technical": create_technical_schema,
-        "academic": create_academic_schema,
-        "legal": create_legal_schema
-    }
-    
-    if schema_name in schemas:
-        return schemas[schema_name]()
+    # Simplified - only provide base schema
+    from .schema_helpers import create_base_schema
+    if schema_name == "base":
+        return create_base_schema()
     return None
 
 
@@ -90,8 +75,8 @@ Examples:
   # Use inline JSON schema
   groq-pdf document.pdf --schema '{"type":"object","properties":{"page_number":{"type":"integer"},"content":{"type":"string"}}}' --save
 
-  # Use predefined schema
-  groq-pdf document.pdf --schema-preset financial --save
+  # Use base schema explicitly
+  groq-pdf document.pdf --schema-preset base --save
 
   # Get PDF info and estimates
   groq-pdf document.pdf --info-only
@@ -99,13 +84,10 @@ Examples:
   # Validate a schema file
   groq-pdf --validate-schema my_schema.json
 
-Schema Presets:
-  simple     - Basic text and image extraction
-  entity     - Named entity extraction
-  financial  - Financial document analysis
-  technical  - Technical documentation
-  academic   - Academic paper analysis
-  legal      - Legal document analysis
+Schema Options:
+  The default schema works for most documents and includes text extraction,
+  image analysis, table detection, and visual summaries. For custom extraction
+  needs, create your own schema or use the schema building helpers in Python.
         """
     )
     
@@ -121,8 +103,8 @@ Schema Presets:
     schema_group = parser.add_mutually_exclusive_group()
     schema_group.add_argument("--schema", help="Path to custom JSON schema file OR inline JSON schema string")
     schema_group.add_argument("--schema-json", help="Inline JSON schema string (alternative to --schema)")
-    schema_group.add_argument("--schema-preset", choices=["simple", "entity", "financial", "technical", "academic", "legal"], 
-                             help="Use a predefined schema preset")
+    schema_group.add_argument("--schema-preset", choices=["base"], 
+                             help="Use the base comprehensive schema (same as default)")
     
     # Utility options
     parser.add_argument("--info-only", action="store_true", help="Show PDF info and processing estimates only")

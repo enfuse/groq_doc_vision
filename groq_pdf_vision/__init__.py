@@ -49,12 +49,12 @@ from .core import (
     auto_configure_processing,
 )
 
-from .schemas import (
-    create_simple_schema,
-    create_entity_extraction_schema,
-    create_financial_schema,
-    create_technical_schema,
-    create_academic_schema,
+from .schema_helpers import (
+    create_base_schema,
+    add_custom_fields,
+    create_entity_extraction_fields,
+    create_list_field,
+    create_object_field,
 )
 
 from .utils import (
@@ -72,11 +72,11 @@ __all__ = [
     "auto_configure_processing",
     
     # Schema helpers
-    "create_simple_schema",
-    "create_entity_extraction_schema", 
-    "create_financial_schema",
-    "create_technical_schema",
-    "create_academic_schema",
+    "create_base_schema",
+    "add_custom_fields",
+    "create_entity_extraction_fields",
+    "create_list_field",
+    "create_object_field",
     
     # Utilities
     "validate_schema",

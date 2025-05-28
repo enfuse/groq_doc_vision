@@ -121,14 +121,31 @@ result = asyncio.run(process_document())
 #### Custom Schemas
 
 ```python
-from groq_pdf_vision import extract_pdf, create_financial_schema
+from groq_pdf_vision import extract_pdf
+from groq_pdf_vision.schema_helpers import create_base_schema, add_custom_fields
 
-# Use predefined schema
-schema = create_financial_schema()
-result = extract_pdf("report.pdf", schema=schema)
+# Use the default comprehensive schema (recommended for most cases)
+result = extract_pdf("document.pdf")
 
-# Use custom schema
-custom_schema = {
+# Create a custom schema by extending the base
+base_schema = create_base_schema()
+custom_fields = {
+    "product_names": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Product names mentioned"
+    },
+    "prices": {
+        "type": "array", 
+        "items": {"type": "string"},
+        "description": "Prices and costs mentioned"
+    }
+}
+custom_schema = add_custom_fields(base_schema, custom_fields)
+result = extract_pdf("catalog.pdf", schema=custom_schema)
+
+# Or define a completely custom schema
+minimal_schema = {
     "type": "object",
     "properties": {
         "page_number": {"type": "integer"},
@@ -139,21 +156,17 @@ custom_schema = {
         }
     }
 }
-
-result = extract_pdf("document.pdf", schema=custom_schema)
+result = extract_pdf("document.pdf", schema=minimal_schema)
 ```
 
 ### Command Line Interface
 
 ```bash
-# Basic processing
+# Basic processing with default comprehensive schema
 groq-pdf document.pdf --save
 
 # Specific page range
 groq-pdf document.pdf --start-page 1 --end-page 10
-
-# Use predefined schema
-groq-pdf document.pdf --schema-preset financial
 
 # Custom schema file
 groq-pdf document.pdf --schema my_schema.json
@@ -161,7 +174,7 @@ groq-pdf document.pdf --schema my_schema.json
 # Inline JSON schema
 groq-pdf document.pdf --schema '{"type":"object","properties":{"summary":{"type":"string"}}}'
 
-# Get document info
+# Get document info and processing estimates
 groq-pdf document.pdf --info-only
 ```
 
@@ -175,22 +188,84 @@ streamlit run app.py
 
 Then open http://localhost:8501 for drag-and-drop PDF processing.
 
-## Predefined Schemas
+## Schema Building
 
-The library includes several predefined schemas for common use cases:
+The library provides flexible schema building helpers to extract exactly what you need:
 
+### Basic Usage
 ```python
-from groq_pdf_vision import (
-    create_simple_schema,        # Basic text extraction
-    create_entity_extraction_schema,  # Named entities
-    create_financial_schema,     # Financial documents
-    create_technical_schema,     # Technical documentation
-    create_academic_schema       # Academic papers
+from groq_pdf_vision import extract_pdf
+from groq_pdf_vision.schema_helpers import create_base_schema, add_custom_fields
+
+# Default schema works for most documents
+result = extract_pdf("document.pdf")
+```
+
+### Custom Field Examples
+```python
+# Financial document extraction
+base = create_base_schema()
+financial_fields = {
+    "financial_figures": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Revenue, profit, costs, and other financial amounts"
+    },
+    "companies_mentioned": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Company names and organizations"
+    }
+}
+financial_schema = add_custom_fields(base, financial_fields)
+
+# Research document extraction  
+research_fields = {
+    "methodology": {"type": "string", "description": "Research methodology"},
+    "findings": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Key findings and results"
+    }
+}
+research_schema = add_custom_fields(base, research_fields)
+
+# Product catalog extraction
+product_fields = {
+    "product_names": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Product names mentioned"
+    },
+    "specifications": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Technical specifications"
+    }
+}
+product_schema = add_custom_fields(base, product_fields)
+```
+
+### Schema Building Helpers
+```python
+from groq_pdf_vision.schema_helpers import (
+    create_base_schema,
+    add_custom_fields,
+    create_entity_extraction_fields,
+    create_list_field,
+    create_object_field
 )
 
-# Use any predefined schema
-schema = create_financial_schema()
-result = extract_pdf("annual_report.pdf", schema=schema)
+# Build a schema step by step
+schema = create_base_schema(include_images=True, include_tables=False)
+
+# Add entity extraction for any domain
+entity_fields = create_entity_extraction_fields(["person", "company", "location"])
+schema = add_custom_fields(schema, entity_fields)
+
+# Add custom list fields
+contact_fields = create_list_field("contact_emails", "Email addresses found")
+schema = add_custom_fields(schema, contact_fields)
 ```
 
 ## Integration Examples

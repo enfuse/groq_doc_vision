@@ -61,51 +61,8 @@ def load_api_key():
 
 def get_default_schema():
     """Get the comprehensive default schema for PDF extraction."""
-    return {
-        "type": "object",
-        "properties": {
-            "page_number": {"type": "integer", "description": "Page number (1-indexed) where this data was extracted from"},
-            "content": {"type": "string", "description": "Main text content extracted from the page"},
-            "custom_content": {"type": "string", "description": "Source document identifier"},
-            "error": {"type": "integer", "description": "Error code (0 for success)"},
-            "name": {"type": "string", "description": "Page identifier name"},
-            "result": {"type": "string", "description": "Processing summary"},
-            "wordings_and_terms": {"type": "array", "items": {"type": "string"}, "description": "Key terms found"},
-            "key_main_takeaways": {"type": "array", "items": {"type": "string"}, "description": "Main takeaways"},
-            "primary_insights": {"type": "array", "items": {"type": "string"}, "description": "Primary insights"},
-            "explicit_sections": {"type": "array", "items": {"type": "string"}, "description": "Section headings"},
-            "explicit_pages": {"type": "array", "items": {"type": "integer"}, "description": "Referenced page numbers"},
-            "contains_tables": {"type": "boolean", "description": "Whether page contains tables"},
-            "contains_images": {"type": "boolean", "description": "Whether page contains images, charts, or diagrams"},
-            "image_descriptions": {
-                "type": "array",
-                "description": "Descriptions of visual elements",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "image_type": {"type": "string", "description": "Type of image (chart, diagram, photo, logo, etc.)"},
-                        "description": {"type": "string", "description": "Detailed description of the image"},
-                        "location": {"type": "string", "description": "Location on page (top, middle, bottom, etc.)"},
-                        "content_relation": {"type": "string", "description": "How the image relates to the text content"}
-                    }
-                }
-            },
-            "visual_summary": {"type": "string", "description": "Overall summary of visual elements on the page"},
-            "tables_data": {
-                "type": "array",
-                "description": "Extracted table data",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "table_title": {"type": "string"},
-                        "headers": {"type": "array", "items": {"type": "string"}},
-                        "rows": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
-                        "table_notes": {"type": "string"}
-                    }
-                }
-            }
-        }
-    }
+    from .schema_helpers import create_base_schema
+    return create_base_schema()
 
 
 def auto_configure_processing(total_pages: int) -> Dict[str, Any]:
