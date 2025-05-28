@@ -593,6 +593,7 @@ def extract_pdf(
     schema: Optional[Dict[str, Any]] = None,
     start_page: Optional[int] = None,
     end_page: Optional[int] = None,
+    progress_callback: Optional[Callable[[str, int, int], None]] = None,
     save_results: bool = False,
     output_filename: Optional[str] = None,
     api_key: Optional[str] = None
@@ -605,6 +606,7 @@ def extract_pdf(
         schema: JSON schema for extraction (uses default if None)
         start_page: Start page number (1-indexed, optional)
         end_page: End page number (1-indexed, optional)
+        progress_callback: Function for progress updates (message, current, total)
         save_results: Whether to save results to JSON file
         output_filename: Custom output filename (auto-generated if None)
         api_key: Groq API key (uses environment/file if None)
@@ -619,6 +621,7 @@ def extract_pdf(
             schema=schema,
             start_page=start_page,
             end_page=end_page,
+            progress_callback=progress_callback,
             save_results=save_results,
             output_filename=output_filename,
             api_key=api_key

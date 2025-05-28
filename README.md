@@ -19,6 +19,10 @@ The Groq PDF Vision library provides intelligent PDF document processing using G
 ## Installation
 
 ```bash
+# Create and activate a virtual environment (recommended)
+python -m venv groq_pdf_vision_env
+source groq_pdf_vision_env/bin/activate  # On Windows: groq_pdf_vision_env\Scripts\activate
+
 # Clone and install from source
 pip install -e .
 ```
@@ -28,8 +32,8 @@ pip install -e .
 ```python
 from groq_pdf_vision import extract_pdf
 
-# Extract data from a PDF
-result = extract_pdf("document.pdf")
+# Extract data from a PDF (limit pages for testing)
+result = extract_pdf("document.pdf", start_page=1, end_page=5)
 
 # Access page-level results
 for page in result["page_results"]:
@@ -38,6 +42,42 @@ for page in result["page_results"]:
 # Access accumulated data
 print(f"Total pages: {len(result['page_results'])}")
 print(f"Images found: {len(result['accumulated_data']['image_descriptions'])}")
+```
+
+### With Progress Tracking (Recommended for Large PDFs)
+
+**Synchronous with Progress:**
+```python
+from groq_pdf_vision import extract_pdf
+
+def progress_callback(message, current, total):
+    percentage = (current / total) * 100
+    print(f"🔄 [{current}/{total}] ({percentage:.1f}%) {message}")
+
+result = extract_pdf(
+    "large_document.pdf",
+    progress_callback=progress_callback
+)
+print(f"✅ Completed in {result['metadata']['processing_time_seconds']:.1f} seconds")
+```
+
+**Async with Progress:**
+```python
+import asyncio
+from groq_pdf_vision import extract_pdf_async
+
+def progress_callback(message, current, total):
+    percentage = (current / total) * 100
+    print(f"🔄 [{current}/{total}] ({percentage:.1f}%) {message}")
+
+async def main():
+    result, metadata = await extract_pdf_async(
+        "large_document.pdf",
+        progress_callback=progress_callback
+    )
+    print(f"✅ Completed in {metadata['processing_time_seconds']:.1f} seconds")
+
+asyncio.run(main())
 ```
 
 ## Usage
