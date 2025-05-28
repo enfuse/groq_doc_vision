@@ -1,0 +1,62 @@
+
+async def safe_generate_response_from_contents(
+
+    contents: List[str], default_values: Dict[str, Any], response_schema: Optional[Dict[str, Any]] = None
+
+) -> Tuple[List[Dict[str, Any]], Any]:
+
+    """
+
+    Calls the Gemini LLM to generate structured output from input content,
+
+    and parses the response into a usable list of dictionaries.
+
+ 
+
+    Args:
+
+        contents (List[str]): The list of string chunks/prompts to send to the model.
+
+        default_values (Dict[str, Any]): Default values to fall back on if needed (not currently used).
+
+        response_schema (Optional[Dict[str, Any]]): Optional schema used to guide model generation.
+
+ 
+
+    Returns:
+
+        Tuple[List[Dict[str, Any]], Any]: A tuple containing:
+
+            - A list of structured dictionaries as parsed from the model response.
+
+            - Usage metadata object (for tracking token usage and cost).
+
+    """
+
+    # Configure the model call with temperature and optional schema for structure enforcement
+
+    generation_config = await get_generation_config(temperature=0, response_schema=response_schema)
+
+ 
+
+    # Call Gemini model and get raw response
+
+    response = await gemini_model.generate_content_async(contents, generation_config=generation_config)
+
+ 
+
+    # Parse the raw response as JSON
+
+    result = json.loads(response.text)
+
+ 
+
+    # Normalize to always return a list of dictionaries
+
+    if isinstance(result, dict):
+
+        result = [result]
+
+ 
+
+    return result, response.usage_metadata

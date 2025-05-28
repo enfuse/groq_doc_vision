@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "properties": {
+    "page_number": {
+      "type": "integer", 
+      "description": "Page number (1-indexed) where this data was extracted from"
+    },
+    "content": {
+      "type": "string", 
+      "description": "Main text content extracted from the page"
+    },
+    "document_type": {
+      "type": "string", 
+      "description": "Type of document (financial, technical, academic, etc.)"
+    },
+    "key_findings": {
+      "type": "array", 
+      "items": {"type": "string"}, 
+      "description": "Most important findings or insights from this page"
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string", "description": "Entity name"},
+          "type": {"type": "string", "description": "Entity type (person, organization, location, etc.)"},
+          "context": {"type": "string", "description": "Context where entity appears"}
+        }
+      },
+      "description": "Named entities found on the page"
+    },
+    "contains_tables": {
+      "type": "boolean", 
+      "description": "Whether page contains tables"
+    },
+    "tables_data": {
+      "type": "array",
+      "description": "Extracted table data",
+      "items": {
+        "type": "object",
+        "properties": {
+          "table_title": {"type": "string"},
+          "headers": {"type": "array", "items": {"type": "string"}},
+          "rows": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+          "summary": {"type": "string", "description": "Brief summary of table content"}
+        }
+      }
+    },
+    "contains_images": {
+      "type": "boolean", 
+      "description": "Whether page contains images, charts, or diagrams"
+    },
+    "image_descriptions": {
+      "type": "array",
+      "description": "Descriptions of visual elements",
+      "items": {
+        "type": "object",
+        "properties": {
+          "image_type": {"type": "string", "description": "Type of image (chart, diagram, photo, logo, etc.)"},
+          "description": {"type": "string", "description": "Detailed description of the image"},
+          "location": {"type": "string", "description": "Location on page (top, middle, bottom, etc.)"},
+          "relevance": {"type": "string", "description": "How relevant this image is to the main content"}
+        }
+      }
+    },
+    "sentiment": {
+      "type": "string", 
+      "description": "Overall sentiment of the page content (positive, negative, neutral)"
+    },
+    "confidence_score": {
+      "type": "number", 
+      "description": "Confidence score for the extraction quality (0.0 to 1.0)"
+    }
+  },
+  "required": ["page_number", "content", "contains_tables", "contains_images"]
+} 

@@ -1,0 +1,13 @@
+# Core dependencies for PDF processing and Groq API
+groq>=0.4.1
+pypdfium2>=4.30.0
+Pillow>=10.0.0
+
+# Async support (usually included in Python 3.7+, but explicit for clarity)
+aiohttp>=3.8.0
+
+# Optional: For enhanced progress tracking and logging
+tqdm>=4.65.0
+
+# Web UI for drag-and-drop PDF processing
+streamlit>=1.28.0
