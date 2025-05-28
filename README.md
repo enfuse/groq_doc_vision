@@ -1,20 +1,26 @@
-# Groq PDF Vision
+<div align="center">
+  <img src="assets/groq-logo.png" alt="Groq" width="200"/>
+  
+  # Groq Document Comprehension
+  
+  **Intelligent PDF processing with enterprise-grade reliability**
+  
+  [![PyPI version](https://img.shields.io/badge/pypi-v1.0.0-blue.svg)](https://pypi.org/project/groq-pdf-vision/)
+  [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+</div>
 
-[![PyPI version](https://img.shields.io/badge/pypi-v1.0.0-blue.svg)](https://pypi.org/project/groq-pdf-vision/)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-The Groq PDF Vision library provides intelligent PDF document processing using Groq's **meta-llama/llama-4-scout-17b-16e-instruct** model. Extract text, analyze images, and get structured data from any PDF with enterprise-grade reliability.
+Transform any PDF into structured, actionable data using Groq's **meta-llama/llama-4-scout-17b-16e-instruct** model. Extract text, analyze images, detect patterns, and get enterprise-ready JSON output with 100% reliability.
 
 ## Features
 
-- **🔍 Intelligent Processing**: Automatic text extraction and image analysis
-- **📊 Structured Output**: JSON schemas with page-level tracking
-- **🖼️ Visual Analysis**: Detect charts, diagrams, logos, and visual elements
-- **⚡ High Performance**: Optimized batch processing with 100% reliability
-- **🐍 Pure Python**: No system dependencies, works everywhere
-- **🔧 Flexible Schemas**: Predefined templates or custom JSON schemas
-- **📱 Multiple Interfaces**: SDK, CLI, and web interface
+- **🧠 Intelligent Comprehension**: Advanced document understanding with context-aware extraction
+- **📊 Structured Intelligence**: Transform unstructured PDFs into actionable JSON data
+- **🖼️ Visual Analysis**: Detect and describe charts, diagrams, tables, and visual elements
+- **⚡ Enterprise Performance**: Optimized batch processing with 100% reliability guarantee
+- **🐍 Zero Dependencies**: Pure Python implementation, works everywhere
+- **🔧 Flexible Schemas**: Build custom extraction patterns for any document type
+- **📱 Multiple Interfaces**: SDK, CLI, and web interface for every workflow
 
 ## Installation
 

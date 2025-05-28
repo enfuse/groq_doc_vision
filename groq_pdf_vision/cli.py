@@ -59,7 +59,7 @@ def get_predefined_schema(schema_name: str) -> Optional[dict]:
 async def main():
     """Main CLI function."""
     parser = argparse.ArgumentParser(
-        description="Groq PDF Vision Extraction SDK - Extract data from PDF documents with AI",
+        description="Groq Document Comprehension - Transform PDFs into structured, actionable data with AI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
